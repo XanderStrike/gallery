@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Image Gallery</h1>
+        
+        <div class="image-grid">
+            {{if .Images}}
+                {{range .Images}}
+                    <div class="image-item">
+                        <img src="/pictures/{{.}}" alt="{{.}}" class="gallery-image" onclick="openFullscreen(this)">
+                    </div>
+                {{end}}
+            {{else}}
+                <p class="no-images">No images found in the pictures folder. Add some images to get started!</p>
+            {{end}}
+        </div>
+    </div>
+
+    <div id="fullscreen-container" class="fullscreen-container">
+        <img id="fullscreen-image" src="" alt="">
+        <span class="close-button" onclick="closeFullscreen()">&times;</span>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
