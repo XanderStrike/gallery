@@ -12,9 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function openFullscreen(img) {
     const fullscreenContainer = document.getElementById('fullscreen-container');
     const fullscreenImage = document.getElementById('fullscreen-image');
+    const zoomLink = document.getElementById('zoom-link');
     
     fullscreenImage.src = img.src;
     fullscreenImage.alt = img.alt;
+    
+    // Update zoom link href
+    zoomLink.href = img.src;
     
     // Set the current image index
     currentImageIndex = parseInt(img.dataset.index);
@@ -34,8 +38,14 @@ function navigateImages(direction) {
     const newImage = document.querySelector(`.gallery-image[data-index="${newIndex}"]`);
     if (newImage) {
         const fullscreenImage = document.getElementById('fullscreen-image');
+        const zoomLink = document.getElementById('zoom-link');
+        
         fullscreenImage.src = newImage.src;
         fullscreenImage.alt = newImage.alt;
+        
+        // Update zoom link href
+        zoomLink.href = newImage.src;
+        
         currentImageIndex = newIndex;
     }
 }

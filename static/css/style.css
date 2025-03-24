@@ -122,3 +122,30 @@ h1 {
 .next-button {
     margin-left: auto;
 }
+
+.zoom-button {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.zoom-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.zoom-button span {
+    font-size: 24px;
+}
