@@ -11,10 +11,10 @@
         <h1>Image Gallery</h1>
         
         <div class="image-grid">
-            {{if .Images}}
-                {{range .Images}}
+            {{if .ImagesWithIndices}}
+                {{range .ImagesWithIndices}}
                     <div class="image-item">
-                        <img src="/pictures/{{.}}" alt="{{.}}" class="gallery-image" onclick="openFullscreen(this)">
+                        <img src="/pictures/{{.Path}}" alt="{{.Path}}" class="gallery-image" data-index="{{.Index}}" data-total="{{len $.Images}}" onclick="openFullscreen(this)">
                     </div>
                 {{end}}
             {{else}}
@@ -26,6 +26,10 @@
     <div id="fullscreen-container" class="fullscreen-container">
         <img id="fullscreen-image" src="" alt="">
         <span class="close-button" onclick="closeFullscreen()">&times;</span>
+        <div class="navigation-buttons">
+            <button class="nav-button prev-button" onclick="navigateImages(-1)">&#10094;</button>
+            <button class="nav-button next-button" onclick="navigateImages(1)">&#10095;</button>
+        </div>
     </div>
 
     <script src="/static/js/script.js"></script>

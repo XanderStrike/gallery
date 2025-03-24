@@ -12,6 +12,13 @@ import (
 
 type PageData struct {
 	Images []string
+	// Add indices to make navigation easier
+	ImagesWithIndices []ImageWithIndex
+}
+
+type ImageWithIndex struct {
+	Path  string
+	Index int
 }
 
 func main() {
@@ -50,8 +57,18 @@ func main() {
 			return
 		}
 
+		// Create images with indices for navigation
+		imagesWithIndices := make([]ImageWithIndex, len(images))
+		for i, img := range images {
+			imagesWithIndices[i] = ImageWithIndex{
+				Path:  img,
+				Index: i,
+			}
+		}
+
 		data := PageData{
-			Images: images,
+			Images:           images,
+			ImagesWithIndices: imagesWithIndices,
 		}
 
 		err = tmpl.Execute(w, data)
