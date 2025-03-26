@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -14,6 +15,10 @@ type PageData struct {
 	Images []string
 	// Add indices to make navigation easier
 	ImagesWithIndices []ImageWithIndex
+	// Pagination data
+	CurrentPage int
+	TotalPages  int
+	ImagesPerPage int
 }
 
 type ImageWithIndex struct {
@@ -28,6 +33,16 @@ func main() {
 		if err != nil {
 			log.Fatal("Failed to create pictures directory:", err)
 		}
+	}
+	
+	// Add template functions
+	funcMap := template.FuncMap{
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"subtract": func(a, b int) int {
+			return a - b
+		},
 	}
 
 	// Serve static files
@@ -50,25 +65,61 @@ func main() {
 			return
 		}
 
-		// Render the template
-		tmpl, err := template.ParseFiles("templates/index.html")
+		// Render the template with function map
+		tmpl, err := template.New("index.html").Funcs(funcMap).ParseFiles("templates/index.html")
 		if err != nil {
 			http.Error(w, "Failed to load template", http.StatusInternalServerError)
 			return
 		}
 
+		// Get page number from query parameter
+		pageStr := r.URL.Query().Get("page")
+		page := 1
+		if pageStr != "" {
+			if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+				page = p
+			}
+		}
+
+		// Calculate pagination
+		imagesPerPage := 200
+		totalImages := len(images)
+		totalPages := (totalImages + imagesPerPage - 1) / imagesPerPage
+
+		// Ensure page is within bounds
+		if page > totalPages && totalPages > 0 {
+			page = totalPages
+		}
+
+		// Get images for current page
+		startIdx := (page - 1) * imagesPerPage
+		endIdx := startIdx + imagesPerPage
+		if endIdx > totalImages {
+			endIdx = totalImages
+		}
+
+		pageImages := images
+		if totalImages > 0 {
+			pageImages = images[startIdx:endIdx]
+		}
+
 		// Create images with indices for navigation
-		imagesWithIndices := make([]ImageWithIndex, len(images))
-		for i, img := range images {
+		imagesWithIndices := make([]ImageWithIndex, len(pageImages))
+		for i, img := range pageImages {
+			// Global index for navigation in fullscreen mode
+			globalIndex := startIdx + i
 			imagesWithIndices[i] = ImageWithIndex{
 				Path:  img,
-				Index: i,
+				Index: globalIndex,
 			}
 		}
 
 		data := PageData{
 			Images:           images,
 			ImagesWithIndices: imagesWithIndices,
+			CurrentPage:      page,
+			TotalPages:       totalPages,
+			ImagesPerPage:    imagesPerPage,
 		}
 
 		err = tmpl.Execute(w, data)

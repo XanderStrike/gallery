@@ -21,6 +21,24 @@
                 <p class="no-images">No images found in the pictures folder. Add some images to get started!</p>
             {{end}}
         </div>
+        
+        {{if gt .TotalPages 1}}
+        <div class="pagination">
+            {{if gt .CurrentPage 1}}
+                <a href="/?page={{subtract .CurrentPage 1}}" class="page-link">&laquo; Previous</a>
+            {{else}}
+                <span class="page-link disabled">&laquo; Previous</span>
+            {{end}}
+            
+            <span class="page-info">Page {{.CurrentPage}} of {{.TotalPages}}</span>
+            
+            {{if lt .CurrentPage .TotalPages}}
+                <a href="/?page={{add .CurrentPage 1}}" class="page-link">Next &raquo;</a>
+            {{else}}
+                <span class="page-link disabled">Next &raquo;</span>
+            {{end}}
+        </div>
+        {{end}}
     </div>
 
     <div id="fullscreen-container" class="fullscreen-container">

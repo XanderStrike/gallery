@@ -6,7 +6,13 @@ let allImages = [];
 // Initialize the image array when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     allImages = Array.from(document.querySelectorAll('.gallery-image'));
-    totalImages = allImages.length;
+    // Get the total images from the first image's data attribute
+    // This is the global count, not just the images on this page
+    if (allImages.length > 0) {
+        totalImages = parseInt(allImages[0].dataset.total);
+    } else {
+        totalImages = 0;
+    }
 });
 
 function openFullscreen(img) {

@@ -149,3 +149,36 @@ h1 {
 .zoom-button span {
     font-size: 24px;
 }
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 15px;
+}
+
+.page-link {
+    padding: 8px 16px;
+    background-color: #4a89dc;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.page-link:hover {
+    background-color: #3672c5;
+}
+
+.page-link.disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-size: 16px;
+    color: #555;
+}
