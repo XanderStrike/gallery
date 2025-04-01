@@ -160,5 +160,10 @@ func getImages(dir string) ([]string, error) {
 		return nil
 	})
 
+	// Reverse the order of images
+	for i, j := 0, len(images)-1; i < j; i, j = i+1, j-1 {
+		images[i], images[j] = images[j], images[i]
+	}
+
 	return images, err
 }
