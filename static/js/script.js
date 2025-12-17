@@ -10,10 +10,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // This is the global count, not just the images on this page
     if (allImages.length > 0) {
         totalImages = parseInt(allImages[0].dataset.total);
+        
+        // Detect the aspect ratio of the first image and apply it to all grid items
+        detectAndApplyAspectRatio();
     } else {
         totalImages = 0;
     }
 });
+
+function detectAndApplyAspectRatio() {
+    if (allImages.length === 0) return;
+    
+    const firstImage = allImages[0];
+    
+    // Create a temporary image element to get the actual dimensions
+    const tempImg = new Image();
+    tempImg.src = firstImage.src;
+    
+    tempImg.onload = function() {
+        const aspectRatio = tempImg.width / tempImg.height;
+        const aspectRatioPercentage = (1 / aspectRatio) * 100;
+        
+        // Apply the aspect ratio to all image items
+        const imageItems = document.querySelectorAll('.image-item');
+        imageItems.forEach(item => {
+            item.style.aspectRatio = aspectRatio.toString();
+            // Also set a fallback for browsers that don't support aspect-ratio property
+            item.style.paddingBottom = aspectRatioPercentage + '%';
+        });
+        
+        console.log('Applied aspect ratio:', aspectRatio, 'to all image grid items');
+    };
+    
+    tempImg.onerror = function() {
+        console.error('Failed to load image for aspect ratio detection');
+    };
+}
 
 function openFullscreen(img) {
     const fullscreenContainer = document.getElementById('fullscreen-container');
