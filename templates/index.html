@@ -11,35 +11,18 @@
     <div class="container">
         <h1>Image Gallery</h1>
         
-        <div class="image-grid">
-            {{if .ImagesWithIndices}}
-                {{range .ImagesWithIndices}}
-                    <div class="image-item">
-                        <img src="/pictures/{{.Path}}" alt="{{.Path}}" class="gallery-image" data-index="{{.Index}}" data-total="{{len $.Images}}" onclick="openFullscreen(this)">
-                    </div>
-                {{end}}
-            {{else}}
-                <p class="no-images">No images found in the pictures folder. Add some images to get started!</p>
-            {{end}}
+        <div class="auto-refresh-indicator">
+            <span id="refresh-indicator" class="refresh-indicator"></span>
+            <span id="refresh-text" class="refresh-text">Auto-refreshing when visible</span>
         </div>
         
-        {{if gt .TotalPages 1}}
-        <div class="pagination">
-            {{if gt .CurrentPage 1}}
-                <a href="/?page={{subtract .CurrentPage 1}}" class="page-link">&laquo; Previous</a>
-            {{else}}
-                <span class="page-link disabled">&laquo; Previous</span>
-            {{end}}
-            
-            <span class="page-info">Page {{.CurrentPage}} of {{.TotalPages}}</span>
-            
-            {{if lt .CurrentPage .TotalPages}}
-                <a href="/?page={{add .CurrentPage 1}}" class="page-link">Next &raquo;</a>
-            {{else}}
-                <span class="page-link disabled">Next &raquo;</span>
-            {{end}}
+        <div class="image-grid">
+            <!-- Images will be loaded dynamically via JavaScript -->
         </div>
-        {{end}}
+        
+        <div class="pagination">
+            <!-- Pagination will be updated dynamically via JavaScript -->
+        </div>
     </div>
 
     <div id="fullscreen-container" class="fullscreen-container">

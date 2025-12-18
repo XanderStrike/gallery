@@ -1,7 +1,7 @@
 package main
 
 import (
-	"html/template"
+	"encoding/json"
 	"io/fs"
 	"log"
 	"net/http"
@@ -11,19 +11,13 @@ import (
 	"strings"
 )
 
-type PageData struct {
-	Images []string
-	// Add indices to make navigation easier
-	ImagesWithIndices []ImageWithIndex
-	// Pagination data
-	CurrentPage int
-	TotalPages  int
-	ImagesPerPage int
-}
 
-type ImageWithIndex struct {
-	Path  string
-	Index int
+
+type APIResponse struct {
+	Images      []string `json:"images"`
+	CurrentPage int      `json:"currentPage"`
+	TotalPages  int      `json:"totalPages"`
+	TotalImages int      `json:"totalImages"`
 }
 
 func main() {
@@ -35,40 +29,18 @@ func main() {
 		}
 	}
 	
-	// Add template functions
-	funcMap := template.FuncMap{
-		"add": func(a, b int) int {
-			return a + b
-		},
-		"subtract": func(a, b int) int {
-			return a - b
-		},
-	}
-
 	// Serve static files
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	
 	// Serve images from the pictures directory
 	http.Handle("/pictures/", http.StripPrefix("/pictures/", http.FileServer(http.Dir("pictures"))))
 
-	// Handle the main page
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			http.NotFound(w, r)
-			return
-		}
-
+	// Handle API endpoint for getting images
+	http.HandleFunc("/api/images", func(w http.ResponseWriter, r *http.Request) {
 		// Get all images from the pictures directory
 		images, err := getImages("pictures")
 		if err != nil {
 			http.Error(w, "Failed to read images", http.StatusInternalServerError)
-			return
-		}
-
-		// Render the template with function map
-		tmpl, err := template.New("index.html").Funcs(funcMap).ParseFiles("templates/index.html")
-		if err != nil {
-			http.Error(w, "Failed to load template", http.StatusInternalServerError)
 			return
 		}
 
@@ -103,30 +75,33 @@ func main() {
 			pageImages = images[startIdx:endIdx]
 		}
 
-		// Create images with indices for navigation
-		imagesWithIndices := make([]ImageWithIndex, len(pageImages))
-		for i, img := range pageImages {
-			// Global index for navigation in fullscreen mode
-			globalIndex := startIdx + i
-			imagesWithIndices[i] = ImageWithIndex{
-				Path:  img,
-				Index: globalIndex,
-			}
+		// Create response
+		response := APIResponse{
+			Images:      pageImages,
+			CurrentPage: page,
+			TotalPages:  totalPages,
+			TotalImages: totalImages,
 		}
 
-		data := PageData{
-			Images:           images,
-			ImagesWithIndices: imagesWithIndices,
-			CurrentPage:      page,
-			TotalPages:       totalPages,
-			ImagesPerPage:    imagesPerPage,
-		}
+		// Set JSON content type
+		w.Header().Set("Content-Type", "application/json")
 
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			http.Error(w, "Failed to render template", http.StatusInternalServerError)
+		// Encode and send JSON response
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, "Failed to encode JSON response", http.StatusInternalServerError)
 			return
 		}
+	})
+
+	// Handle the main page - serve static HTML
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+
+		// Serve the static HTML file
+		http.ServeFile(w, r, "templates/index.html")
 	})
 
 	// Start the server

@@ -49,6 +49,42 @@ h1 {
     color: var(--text-color);
 }
 
+.auto-refresh-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 8px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.refresh-indicator {
+    width: 12px;
+    height: 12px;
+    background-color: #4a89dc;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.refresh-indicator.active {
+    opacity: 1;
+    animation: pulse 1s infinite;
+}
+
+.refresh-text {
+    font-size: 14px;
+    color: var(--text-color);
+    font-style: italic;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
 .image-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
