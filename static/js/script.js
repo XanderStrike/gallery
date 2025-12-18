@@ -7,6 +7,7 @@ let totalPages = 1;
 let imagesPerPage = 200;
 let refreshInterval = null;
 let isPageVisible = true;
+let previousPageData = null;
 
 // Function to get current page from URL
 function getCurrentPageFromURL() {
@@ -134,6 +135,15 @@ async function loadPage(page) {
         return;
     }
     
+    // Check if data is identical to previous data
+    const isDataIdentical = previousPageData && 
+        JSON.stringify(previousPageData) === JSON.stringify(data);
+    
+    if (isDataIdentical) {
+        console.log('Data unchanged, skipping render');
+        return;
+    }
+    
     totalImages = data.totalImages;
     totalPages = data.totalPages;
     imagesPerPage = data.images.length;
@@ -145,6 +155,9 @@ async function loadPage(page) {
     
     // Detect and apply aspect ratio after images are loaded
     detectAndApplyAspectRatio();
+    
+    // Store the current data for future comparison
+    previousPageData = data;
 }
 
 // Function to handle page visibility changes
